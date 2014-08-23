@@ -27,7 +27,120 @@ A `tree` is configurable and has the following methods...
 
 #### tree.root( [root] )
 
-This method is a setter/getter.
+This method is a setter/getter. If no `root` directory is provided, returns the tree `root`. To set the tree `root`,
+
+``` javascript
+tree.root( __dirname );
+```
+
+The `root` should be an __absolute__ path.
+
+
+#### tree.include( type[, filter] )
+
+This method is a setter/getter for regular expression filters to include particular files and directories. The method accepts two types: `files` and `dirs`. If no `filter` is provided, returns the inclusion `filter` for the specified `type`. To set an inclusion `filter`,
+
+``` javascript
+// Only include CSS files from build and styles directories:
+tree.include( 'dirs', /build|styles/ );
+tree.include( 'files', /.+\.css/ );
+```
+
+
+#### tree.exclude( type[, filter] )
+
+This method is a setter/getter for regular expression filters to exclude particular files and directories. The method accepts two types: `files` and `dirs`. If no `filter` is provided, returns the exclusion `filter` for the specified `type`. To set an exclusion `filter`,
+
+``` javascript
+// Exclude any hidden directories and dot files:
+tree.exclude( 'dirs', /^\./ );
+tree.exclude( 'files', /^\./ );
+```
+
+
+#### tree.create()
+
+This method creates a directory tree. To create a tree,
+
+``` javascript
+tree.create();
+```
+
+You __must__ first set a `root` directory __before__ running this method.
+
+
+#### tree.leaves()
+
+This method returns all tree leaves. If a tree has not been created, `leaves` will be an empty array. To return all tree leaves,
+
+``` javascript
+tree.leaves();
+```
+
+Note: the array elements will relative paths from the `root` directory.
+
+
+#### tree.search( include[, exclude] )
+
+This method searches a tree for leaves matching the provided regular expression filters. An `include` or `exclude` or both filters are __required__. To only specify an `exclude` filter, set the `include` filter to `null`. To perform a search,
+
+``` javascript
+// Search inclusively for `*.md` files:
+tree.search( /+.\.md$/ );
+
+// Search for any files which are not `*.txt` files:
+tree.search( null, /.+\.txt$/ );
+
+// Search both inclusively and exclusively for all files having `foo` but not `bar` in their relative path:
+tree.search( /foo/, /bar/ );
+```
+
+
+#### tree.read( [options,] clbk )
+
+This method searches a tree for leaves matching provided filters and reads the leaves( files), returning the file content. The `options` object may have one or more of the following fields:
+
+``` javascript
+var options = {
+		'include': /foo/,
+		'exclude': /bar/,
+		'encoding': 'utf8',
+		'concat': true
+	};
+```
+
+The filters are the same as for `tree.search()`. The `encoding` option is the file [encoding](http://nodejs.org/api/fs.html#fs_fs_readfile_filename_options_callback). The `concat` flag indicates whether the file content should be concatenated and returned as a `string`. If set to `false`, the file content is returned in an `object`, where each field is the absolute file path and each value is the corresponding file content.
+
+To read leaves and concatentate the file content into a single string,
+
+``` javascript
+var options = {
+		'include': /.+\.css$/,
+		'exclude': /src/,
+		'encoding': 'utf8',
+		'concat': true
+	};
+
+// Read and concatenate all CSS files not in the `src` directory:
+tree.read( options, onRead );
+
+function onRead( error, content ) {
+	if ( error ) {
+		console.error( error );
+		return;
+	}
+	console.log( content );
+}
+```
+
+
+#### tree.toJSON()
+
+This method serializes a directory tree as JSON. To get the JSON tree,
+
+``` javascript
+tree.toJSON();
+```
 
 
 ## Examples 
@@ -67,7 +180,7 @@ console.log(
 );
 ```
 
-To run the example code from the top-level application directory,
+To run example code from the top-level application directory,
 
 ``` bash
 $ node ./examples/index.js

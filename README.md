@@ -41,7 +41,7 @@ The `root` should be an __absolute__ path.
 This method is a setter/getter for regular expression filters to include particular files and directories. The method accepts two types: `files` and `dirs`. If no `filter` is provided, returns the inclusion `filter` for the specified `type`. To set an inclusion `filter`,
 
 ``` javascript
-// Only include CSS files from build and styles directories:
+// Only include CSS files from build or styles directories:
 tree.include( 'dirs', /build|styles/ );
 tree.include( 'files', /.+\.css/ );
 ```
@@ -77,12 +77,12 @@ This method returns all tree leaves. If a tree has not been created, `leaves` wi
 tree.leaves();
 ```
 
-Note: the array elements will relative paths from the `root` directory.
+Note: the array elements will be relative paths from the `root` directory.
 
 
 #### tree.search( include[, exclude] )
 
-This method searches a tree for leaves matching the provided regular expression filters. An `include` or `exclude` or both filters are __required__. To only specify an `exclude` filter, set the `include` filter to `null`. To perform a search,
+This method searches a tree for leaves matching the provided regular expression filters. Either an `include` or `exclude` or both filters are __required__. To only specify an `exclude` filter, set the `include` filter to `null`. To perform a search,
 
 ``` javascript
 // Search inclusively for `*.md` files:
@@ -91,14 +91,14 @@ tree.search( /+.\.md$/ );
 // Search for any files which are not `*.txt` files:
 tree.search( null, /.+\.txt$/ );
 
-// Search both inclusively and exclusively for all files having `foo` but not `bar` in their relative path:
+// Search both inclusively and exclusively for all files having `foo` but not `bar` in their relative paths:
 tree.search( /foo/, /bar/ );
 ```
 
 
 #### tree.read( [options,] clbk )
 
-This method searches a tree for leaves matching provided filters and reads the leaves( files), returning the file content. The `options` object may have one or more of the following fields:
+This method searches a tree for leaves matching provided filters and reads the leaves ( files), returning the file content. The `options` object may have one or more of the following fields:
 
 ``` javascript
 var options = {
@@ -109,7 +109,7 @@ var options = {
 	};
 ```
 
-The filters are the same as for `tree.search()`. The `encoding` option is the file [encoding](http://nodejs.org/api/fs.html#fs_fs_readfile_filename_options_callback). The `concat` flag indicates whether the file content should be concatenated and returned as a `string`. If set to `false`, the file content is returned in an `object`, where each field is the absolute file path and each value is the corresponding file content.
+The filters are the same as for `tree.search()`. The `encoding` option is the file [encoding](http://nodejs.org/api/fs.html#fs_fs_readfile_filename_options_callback). The `concat` flag indicates whether the file content should be concatenated and returned as a `string`. If set to `false`, the file content is returned as an `object`, where each field is the absolute file path and each value is the corresponding file content.
 
 To read leaves and concatentate the file content into a single string,
 
@@ -121,7 +121,7 @@ var options = {
 		'concat': true
 	};
 
-// Read and concatenate all CSS files not in the `src` directory:
+// Read and concatenate all CSS files not in a `src` directory:
 tree.read( options, onRead );
 
 function onRead( error, content ) {
@@ -189,7 +189,7 @@ $ node ./examples/index.js
 
 ## Notes
 
-This module currently only supports directories and files. __No__ support for symlinks, devices, FIFO, or sockets.
+This module currently __only__ supports _directories_ and _files_ and does __not__ support _symlinks_, _devices_, _FIFO_, or _sockets_.
 
 
 ---

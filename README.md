@@ -42,7 +42,7 @@ This method is a setter/getter for regular expression filters to include particu
 
 ``` javascript
 // Only include CSS files from build or styles directories:
-tree.include( 'dirs', /build|styles/ );
+tree.include( 'dirs', /build|styles/ ); // /build/, /styles/, /styles/build/, /build/styles/
 tree.include( 'files', /.+\.css/ );
 ```
 

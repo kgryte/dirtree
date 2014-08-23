@@ -4,6 +4,9 @@
 var // Expectation library:
 	chai = require( 'chai' ),
 
+	// Filesystem module:
+	fs = require( 'fs' ),
+
 	// Path module:
 	path = require( 'path' ),
 
@@ -683,7 +686,27 @@ describe( 'tree', function tests() {
 			}
 		});
 
-		it( 'should throw an error if any errors are encountered when reading file content' );
+		it( 'should return any error encountered when reading file content', function test( done ) {
+			var tree = createTree();
+
+			tree
+				.root( path.join( __dirname, 'test_dir' ) )
+				.create();
+
+			fs.chmodSync( TREE['README.md'], '333' );
+
+			tree.read( {'include': /.+\.md/}, onRead );
+
+			function onRead( error, content ) {
+				if ( error ) {
+					assert.ok( true );
+				} else {
+					assert.notOk( true );
+				}
+				fs.chmodSync( TREE['README.md'], '644' );
+				done();
+			}
+		});
 
 		it( 'should return file content', function test( done ) {
 			var tree = createTree(),

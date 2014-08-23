@@ -22,7 +22,11 @@
   "bugs": {
     "url": "https://github.com/kgryte/dirtree/issues"
   },
-  "keywords": [],
+  "keywords": [
+    "walk",
+    "tree",
+    "directory"
+  ],
   "dependencies": {
     "flat": "^1.2.1"
   },

@@ -23,4 +23,8 @@ describe( 'tree', function tests() {
 		expect( createTree ).to.be.a( 'function' );
 	});
 
+	describe( 'root', function tests() {
+		
+	});
+
 });

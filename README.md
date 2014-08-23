@@ -1,9 +1,10 @@
-Tree
+DirTree
 ====
+[![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Coverage Status][coveralls-image]][coveralls-url] [![Dependencies][dependencies-image]][dependencies-url]
 
 > Translate a directory structure into a tree object.
 
-This module translates a directory structure into a tree object and provides an interface to search and load files (leaves) within that tree.
+This module translates a directory structure into a tree object and provides an interface to search and load leaves (files) within that tree.
 
 
 ## Installation
@@ -41,7 +42,7 @@ var tree = createTree();
 tree
 	.root( __dirname )
 	.exclude( 'dirs', /^\./ )
-	.exclude( 'files' /^\./ )
+	.exclude( 'files', /^\./ )
 	.create();
 
 // Serialize the tree:

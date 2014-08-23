@@ -4,6 +4,9 @@
 var // Expectation library:
 	chai = require( 'chai' ),
 
+	// Path module:
+	path = require( 'path' ),
+
 	// Module to be tested:
 	createTree = require( './../lib' );
 
@@ -18,6 +21,45 @@ var expect = chai.expect,
 
 describe( 'tree', function tests() {
 	'use strict';
+
+	// SETUP //
+
+	var TREE, LEAVES;
+
+	TREE = {
+		'README.md': path.join( __dirname, 'test_dir/README.md' ),
+		'foo': {
+			'index.js': path.join( __dirname, 'test_dir/foo/index.js' ),
+			'bar': {
+				'css': {
+					'styles.1.css': path.join( __dirname, 'test_dir/foo/bar/css/styles.1.css' ),
+					'styles.2.css': path.join( __dirname, 'test_dir/foo/bar/css/styles.2.css' )
+				},
+				'js': {
+					'script.1.js': path.join( __dirname, 'test_dir/foo/bar/js/script.1.js' ),
+					'script.2.js': path.join( __dirname, 'test_dir/foo/bar/js/script.2.js' )
+				},
+				'text': {
+					'bar.txt': path.join( __dirname, 'test_dir/foo/bar/text/bar.txt' ),
+					'foo.txt': path.join( __dirname, 'test_dir/foo/bar/text/foo.txt' )
+				}
+			}
+		}
+	};
+
+	LEAVES = [
+		'README.md',
+		'foo/index.js',
+		'foo/bar/css/styles.1.css',
+		'foo/bar/css/styles.2.css',
+		'foo/bar/js/script.1.js',
+		'foo/bar/js/script.2.js',
+		'foo/bar/text/bar.txt',
+		'foo/bar/text/foo.txt'
+	];
+
+
+	// TESTS //
 
 	it( 'should export a factory function', function test() {
 		expect( createTree ).to.be.a( 'function' );
@@ -209,7 +251,128 @@ describe( 'tree', function tests() {
 
 		it( 'should throw an error if the tree has no root', function test() {
 			var tree = createTree();
-			expect( tree.create ).to.throw( Error );
+			expect( foo ).to.throw( Error );
+			function foo() {
+				tree.create();
+			}
+		});
+
+		it( 'should create a directory tree', function test( done ) {
+			var tree = createTree();
+
+			tree
+				.root( path.join( __dirname, 'test_dir' ) )
+				.create();
+
+			assert.deepEqual( tree.toJSON(), TREE );
+
+			done();
+		});
+
+		it( 'should create a directory tree using inclusion file filters', function test( done ) {
+			var tree = createTree(),
+				expected = {
+					'README.md': TREE[ 'README.md' ]
+				};
+
+			tree
+				.include( 'files', /.+\.md/ )
+				.root( path.join( __dirname, 'test_dir' ) )
+				.create();
+
+			assert.deepEqual( tree.toJSON(), expected );
+
+			done();
+		});
+
+		it( 'should create a directory tree using exlusion file filters', function test( done ) {
+			var tree = createTree(),
+				expected = {
+					'README.md': TREE[ 'README.md' ],
+					'foo': {
+						'bar': {
+							'text': {
+								'bar.txt': TREE['foo']['bar']['text']['bar.txt'],
+								'foo.txt': TREE['foo']['bar']['text']['foo.txt']
+							}
+						}
+					}
+				};
+
+			tree
+				.exclude( 'files', /.+\.js|.+\.css/ )
+				.root( path.join( __dirname, 'test_dir' ) )
+				.create();
+
+			assert.deepEqual( tree.toJSON(), expected );
+
+			done();
+		});
+
+		it( 'should create a directory tree using inclusion directory filters', function test( done ) {
+			var tree = createTree(),
+				expected = {
+					'README.md': TREE[ 'README.md' ],
+					'foo': {
+						'bar': {
+							'text': {
+								'bar.txt': TREE['foo']['bar']['text']['bar.txt'],
+								'foo.txt': TREE['foo']['bar']['text']['foo.txt']
+							}
+						},
+						'index.js': TREE['foo']['index.js']
+					}
+				};
+
+			tree
+				.include( 'dirs', /foo|bar|text/ )
+				.root( path.join( __dirname, 'test_dir' ) )
+				.create();
+
+			assert.deepEqual( tree.toJSON(), expected );
+
+			done();
+		});
+
+		it( 'should create a directory tree using exclusion directory filters', function test( done ) {
+			var tree = createTree(),
+				expected = {
+					'README.md': TREE[ 'README.md' ]
+				};
+
+			tree
+				.exclude( 'dirs', /foo/ )
+				.root( path.join( __dirname, 'test_dir' ) )
+				.create();
+
+			assert.deepEqual( tree.toJSON(), expected );
+
+			done();
+		});
+
+		it( 'should create a directory tree using a combination of inclusion/exclusion file and directory filters', function test( done ) {
+			var tree = createTree(),
+				expected = {
+					'foo': {
+						'bar': {
+							'text': {
+								'bar.txt': TREE['foo']['bar']['text']['bar.txt']
+							}
+						}
+					}
+				};
+
+			tree
+				.include( 'files', /.+\.txt/ )
+				.include( 'dirs', /./ )
+				.exclude( 'files', /foo/ )
+				.exclude( 'dirs', /css/ )
+				.root( path.join( __dirname, 'test_dir' ) )
+				.create();
+
+			assert.deepEqual( tree.toJSON(), expected );
+
+			done();
 		});
 
 	}); // end TESTS create
@@ -219,6 +382,23 @@ describe( 'tree', function tests() {
 		it( 'should provide a method to list all tree leaves (files)', function test() {
 			var tree = createTree();
 			expect( tree.leaves ).to.be.a( 'function' );
+		});
+
+		it( 'should list all tree leaves (files)', function test() {
+			var tree = createTree(),
+				leaves;
+
+			tree
+				.root( path.join( __dirname, 'test_dir' ) )
+				.create();
+
+			leaves = tree.leaves();
+
+			assert.strictEqual( leaves.length, LEAVES.length );
+
+			for ( var i = 0; i < LEAVES.length; i++ ) {
+				assert.notEqual( leaves.indexOf( LEAVES[i] ), -1 );
+			}
 		});
 
 	}); // end TESTS leaves
@@ -232,12 +412,27 @@ describe( 'tree', function tests() {
 
 		it( 'should require a filter', function test() {
 			var tree = createTree();
-			expect( tree.search ).to.throw( Error );
+			
+			tree
+				.root( path.join( __dirname, 'test_dir' ) )
+				.create();
+
+			expect( foo ).to.throw( Error );
+
+			function foo() {
+				tree.search();
+			}
 		});
 
 		it( 'should require either an inclusion or exclusion filter or both', function test() {
 			var tree = createTree();
+
+			tree
+				.root( path.join( __dirname, 'test_dir' ) )
+				.create();
+
 			expect( foo ).to.throw( Error );
+
 			function foo() {
 				tree.search( null );
 			}
@@ -271,7 +466,72 @@ describe( 'tree', function tests() {
 			}
 		});
 
-		it( 'should search' );
+		it( 'should search via an include filter', function test() {
+			var tree = createTree(),
+				expected = {
+					'foo/index.js': TREE[ 'foo' ][ 'index.js' ]
+				},
+				matches;
+
+			tree
+				.root( path.join( __dirname, 'test_dir' ) )
+				.create();
+
+			matches = tree.search( /index.js/ );
+
+			expect( matches ).to.be.an( 'object' );
+			assert.deepEqual( matches, expected );
+		});
+
+		it( 'should search via an exclude filter', function test() {
+			var tree = createTree(),
+				expected = {
+					'foo/index.js': TREE[ 'foo' ][ 'index.js' ],
+					'README.md': TREE[ 'README.md' ]
+				},
+				matches;
+
+			tree
+				.root( path.join( __dirname, 'test_dir' ) )
+				.create();
+
+			matches = tree.search( null, /bar/ );
+
+			expect( matches ).to.be.an( 'object' );
+			assert.deepEqual( matches, expected );
+		});
+
+		it( 'should search using both an include and an exclude filter', function test() {
+			var tree = createTree(),
+				expected = {
+					'foo/index.js': TREE[ 'foo' ][ 'index.js' ]
+				},
+				matches;
+
+			tree
+				.root( path.join( __dirname, 'test_dir' ) )
+				.create();
+
+			matches = tree.search( /foo/, /bar/ );
+
+			expect( matches ).to.be.an( 'object' );
+			assert.deepEqual( matches, expected );
+		});
+
+		it( 'should return an empty object if no matches are found', function test() {
+			var tree = createTree(),
+				expected = {},
+				matches;
+
+			tree
+				.root( path.join( __dirname, 'test_dir' ) )
+				.create();
+
+			matches = tree.search( /baz/, /bar/ );
+
+			expect( matches ).to.be.an( 'object' );
+			assert.deepEqual( matches, expected );
+		});
 
 	}); // end TESTS search
 
@@ -284,7 +544,16 @@ describe( 'tree', function tests() {
 
 		it( 'should require a callback', function test() {
 			var tree = createTree();
-			expect( tree.read ).to.throw( Error );
+
+			tree
+				.root( path.join( __dirname, 'test_dir' ) )
+				.create();
+
+			expect( foo ).to.throw( Error );
+
+			function foo() {
+				tree.read();
+			}
 		});
 
 		it( 'should ensure that the callback is a function', function test() {
@@ -397,9 +666,83 @@ describe( 'tree', function tests() {
 			}
 		});
 
-		it( 'should return null if no found matches' );
+		it( 'should return null if no found matches', function test( done ) {
+			var tree = createTree();
 
-		it( 'should read' );
+			tree
+				.root( path.join( __dirname, 'test_dir' ) )
+				.create()
+				.read({
+					'include': /baz/,
+					'exclude': /bar/
+				}, onRead );
+
+			function onRead( content ) {
+				assert.isNull( content );
+				done();
+			}
+		});
+
+		it( 'should throw an error if any errors are encountered when reading file content' );
+
+		it( 'should return file content', function test( done ) {
+			var tree = createTree(),
+				expected = {},
+				foo,
+				bar;
+
+			bar = path.join( __dirname, 'test_dir/foo/bar/text/bar.txt' );
+			foo = path.join( __dirname, 'test_dir/foo/bar/text/foo.txt' );
+
+			expected[ bar ] = 'Hello.';
+			expected[ foo ] = 'Beep.';
+
+			tree
+				.root( path.join( __dirname, 'test_dir' ) )
+				.create()
+				.read({
+					'include': /.+\.txt/
+				}, onRead );
+
+			function onRead( error, content ) {
+				if ( error ) {
+					assert.notOk( true );
+					done();
+					return;
+				}
+				assert.deepEqual( content, expected );
+				done();
+			}
+		});
+
+		it( 'should return concatentated file content', function test( done ) {
+			var tree = createTree(),
+				styles1,
+				styles2;
+
+			styles1 = /\.beep{width:100%;height:100%;}/;
+			styles2 = /\.boop{width:50%;height:50%;}/;
+
+			tree
+				.root( path.join( __dirname, 'test_dir' ) )
+				.create()
+				.read({
+					'include': /.+\.css/,
+					'concat': true
+				}, onRead );
+
+			function onRead( error, content ) {
+				if ( error ) {
+					assert.notOk( true );
+					done();
+					return;
+				}
+				expect( content ).to.be.a( 'string' );
+				assert.ok( styles1.test( content ) );
+				assert.ok( styles2.test( content ) );
+				done();
+			}
+		});
 
 	}); // end TESTS read
 
@@ -410,7 +753,15 @@ describe( 'tree', function tests() {
 			expect( tree.toJSON ).to.be.a( 'function' );
 		});
 
-		it( 'should serialize a directory tree' );
+		it( 'should serialize a directory tree as JSON', function test() {
+			var tree = createTree();
+
+			tree
+				.root( path.join( __dirname, 'test_dir' ) )
+				.create();
+
+			assert.deepEqual( tree.toJSON(), TREE );
+		});
 
 	}); // end TESTS toJSON
 

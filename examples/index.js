@@ -17,7 +17,49 @@ var tree = createTree();
 
 tree
 	.root( root )
-	.filter( /^\.|node_modules|\.md$/ )
+	.exclude( 'dirs', /^\.|node_modules/ )
+	.exclude( 'files', /^\./ )
+	.include( 'files', /index.js/ )
 	.create();
 
-console.log( tree._tree );
+// Serialize the tree to JSON:
+console.log( tree.toJSON() );
+
+/**
+* Returns:
+*
+*/
+
+// Get the tree leaves:
+console.log( tree.leaves() );
+
+/**
+* Returns:
+*
+*/
+
+// Search the leaves:
+console.log( tree.search( /index.js/, /examples/ ) );
+
+/**
+* Returns:
+*
+*/
+
+// Read leaf files:
+var data = tree.read(
+	{
+		'include': /index.js/,
+		'exclude': /examples/,
+		'encoding': 'utf8',
+		'concat': true
+	},
+	function onRead( data ) {
+		// console.log( data );
+	}
+);
+
+/**
+* Returns:
+*
+*/

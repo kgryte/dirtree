@@ -1,7 +1,7 @@
 {
-  "name": "dir-to-json",
+  "name": "dirtree",
   "version": "0.0.0",
-  "description": "",
+  "description": "Translate a directory structure into a tree object.",
   "author": {
     "name": "Athan Reines",
     "email": "athan@nodeprime.com"
@@ -17,10 +17,10 @@
   "main": "./lib",
   "repository": {
     "type": "git",
-    "url": "git://github.com/kgryte/dir-to-json.git"
+    "url": "git://github.com/kgryte/dirtree.git"
   },
   "bugs": {
-    "url": "https://github.com/kgryte/dir-to-json/issues"
+    "url": "https://github.com/kgryte/dirtree/issues"
   },
   "keywords": [],
   "dependencies": {

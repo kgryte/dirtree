@@ -1,6 +1,6 @@
 {
   "name": "dirtree",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Translate a directory structure into a tree object.",
   "author": {
     "name": "Athan Reines",

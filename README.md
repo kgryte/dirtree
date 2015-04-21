@@ -36,6 +36,9 @@ This method is a setter/getter. If no `root` directory is provided, returns the 
 
 ``` javascript
 tree.root( __dirname );
+
+var root = tree.root();
+// returns '/absolute/directory/path/'
 ```
 
 __Note__: the `root` should be an __absolute__ path.
@@ -43,7 +46,7 @@ __Note__: the `root` should be an __absolute__ path.
 
 ##### tree.include( type[, filter] )
 
-This method is a setter/getter for regular expression filters to include particular files and directories. The method accepts two types: `files` and `dirs`. If no `filter` is provided, returns the inclusion `filter` for the specified `type`. To set an inclusion `filter`,
+This method is a setter/getter for regular expression filters to __include__ particular files and directories. The method accepts two types: `files` and `dirs`. If no `filter` is provided, returns the inclusion `filter` for the specified `type`. To set an inclusion `filter`,
 
 ``` javascript
 // Only include CSS files from build or styles directories:
@@ -54,7 +57,7 @@ tree.include( 'files', /.+\.css/ );
 
 ##### tree.exclude( type[, filter] )
 
-This method is a setter/getter for regular expression filters to exclude particular files and directories. The method accepts two types: `files` and `dirs`. If no `filter` is provided, returns the exclusion `filter` for the specified `type`. To set an exclusion `filter`,
+This method is a setter/getter for regular expression filters to __exclude__ particular files and directories. The method accepts two types: `files` and `dirs`. If no `filter` is provided, returns the exclusion `filter` for the specified `type`. To set an exclusion `filter`,
 
 ``` javascript
 // Exclude any hidden directories and dot files:
@@ -83,7 +86,7 @@ tree.leaves();
 // returns [...]
 ```
 
-Note: the array elements will be relative paths from the `root` directory.
+__Note__: the `array` elements will be __relative__ paths from the `root` directory.
 
 
 ##### tree.search( include[, exclude] )
@@ -126,7 +129,7 @@ The method accepts the following `options`:
 *	__include__: inclusion filter (same as for `tree.search()`).
 *	__exclude__: exclusion filter (same as for `tree.search()`).
 *	__encoding__: file [encoding](http://nodejs.org/api/fs.html#fs_fs_readfile_filename_options_callback). Default: `'utf8'`.
-*	__concat__: `boolean` flag indicating whether the file content should be concatenated and returns as a `string`. If `false`, the file content is returned as an `object`, where each filed is the absolute file path and each value is the corresponding file content.
+*	__concat__: `boolean` flag indicating whether the file content should be concatenated and returned as a `string`. If `false`, the file content is returned as an `object`, where each filed is the absolute file path and each value is the corresponding file content.
 
 ``` javascript
 var options = {

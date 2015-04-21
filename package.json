@@ -7,7 +7,10 @@
     "email": "athan@nodeprime.com"
   },
   "contributors": [
-    {}
+    {
+      "name": "Athan Reines",
+      "email": "kgryte@gmail.com"
+    }
   ],
   "scripts": {
     "test": "./node_modules/.bin/mocha",
@@ -28,13 +31,19 @@
     "directory"
   ],
   "dependencies": {
-    "flat": "^1.2.1"
+    "flat": "^1.2.1",
+    "utils-copy": "^1.0.0",
+    "validate.io-boolean-primitive": "^1.0.0",
+    "validate.io-regexp": "^1.0.3",
+    "validate.io-string-primitive": "^1.0.0"
   },
   "devDependencies": {
-    "chai": "1.x.x",
+    "chai": "2.x.x",
     "coveralls": "^2.11.1",
     "istanbul": "^0.3.0",
-    "mocha": "1.x.x"
+    "jshint": "2.x.x",
+    "jshint-stylish": "^1.0.0",
+    "mocha": "2.x.x"
   },
   "licenses": [
     {

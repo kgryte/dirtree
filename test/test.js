@@ -1,3 +1,5 @@
+/* global require, describe, it */
+'use strict';
 
 // MODULES //
 
@@ -23,7 +25,6 @@ var expect = chai.expect,
 // TESTS //
 
 describe( 'tree', function tests() {
-	'use strict';
 
 	// SETUP //
 
@@ -415,7 +416,7 @@ describe( 'tree', function tests() {
 
 		it( 'should require a filter', function test() {
 			var tree = createTree();
-			
+
 			tree
 				.root( path.join( __dirname, 'test_dir' ) )
 				.create();

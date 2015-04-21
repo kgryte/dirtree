@@ -1,4 +1,4 @@
-
+'use strict';
 
 // MODULES //
 
@@ -6,60 +6,61 @@ var path = require( 'path' ),
 	createTree = require( './../lib' );
 
 
-// VARIABLES //
-
-var root = path.resolve( __dirname, '../' );
-
-
 // TREE //
 
 var tree = createTree();
 
 tree
-	.root( root )
-	.exclude( 'dirs', /^\.|node_modules/ )
+	.root( path.resolve( __dirname, '../' ) )
+	.exclude( 'dirs', /^\.|node_modules|reports|test/ )
 	.exclude( 'files', /^\./ )
 	.include( 'files', /index.js/ )
 	.create();
 
 // Serialize the tree to JSON:
 console.log( tree.toJSON() );
-
-/**
-* Returns:
-*
+/* returns:
+	{
+		'examples': {
+			'index.js': '/path/to/dirtree/examples/index.js'
+		},
+		'lib': {
+			'index.js': '/path/to/dirtree/lib/index.js'
+		}
+	}
 */
 
 // Get the tree leaves:
 console.log( tree.leaves() );
-
-/**
-* Returns:
-*
+/* returns:
+	[
+		'examples/index.js',
+		'lib/index.js'
+	]
 */
 
 // Search the leaves:
 console.log( tree.search( /index.js/, /examples/ ) );
-
-/**
-* Returns:
-*
-*/
-
-// Read leaf files:
-var data = tree.read(
+/* returns:
 	{
-		'include': /index.js/,
-		'exclude': /examples/,
-		'encoding': 'utf8',
-		'concat': true
-	},
-	function onRead( data ) {
-		// console.log( data );
+		'lib/index.js': '/path/to/dirtree/lib/index.js'
 	}
-);
-
-/**
-* Returns:
-*
 */
+
+// Read leaf files...
+var opts = {
+	'include': /index.js/,
+	'exclude': /examples/,
+	'encoding': 'utf8',
+	'concat': true
+};
+
+tree.read( opts, onRead );
+
+function onRead( error, data ) {
+	if ( error ) {
+		throw error;
+	}
+	console.log( data );
+	// returns `lib/index.js` file content
+}

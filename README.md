@@ -15,17 +15,22 @@ $ npm install dirtree
 
 ## Usage
 
-To create a new tree generator,
-
 ``` javascript
 var createTree = require( 'dirtree' );
+```
 
+#### createTree()
+
+Creates a new `Tree` instance.
+
+``` javascript
 var tree = createTree();
 ```
 
 A `tree` is configurable and has the following methods...
 
-#### tree.root( [root] )
+
+##### tree.root( [root] )
 
 This method is a setter/getter. If no `root` directory is provided, returns the tree `root`. To set the tree `root`,
 
@@ -33,10 +38,10 @@ This method is a setter/getter. If no `root` directory is provided, returns the 
 tree.root( __dirname );
 ```
 
-The `root` should be an __absolute__ path.
+__Note__: the `root` should be an __absolute__ path.
 
 
-#### tree.include( type[, filter] )
+##### tree.include( type[, filter] )
 
 This method is a setter/getter for regular expression filters to include particular files and directories. The method accepts two types: `files` and `dirs`. If no `filter` is provided, returns the inclusion `filter` for the specified `type`. To set an inclusion `filter`,
 
@@ -47,7 +52,7 @@ tree.include( 'files', /.+\.css/ );
 ```
 
 
-#### tree.exclude( type[, filter] )
+##### tree.exclude( type[, filter] )
 
 This method is a setter/getter for regular expression filters to exclude particular files and directories. The method accepts two types: `files` and `dirs`. If no `filter` is provided, returns the exclusion `filter` for the specified `type`. To set an exclusion `filter`,
 
@@ -58,68 +63,78 @@ tree.exclude( 'files', /^\./ );
 ```
 
 
-#### tree.create()
+##### tree.create()
 
-This method creates a directory tree. To create a tree,
+Creates a directory tree.
 
 ``` javascript
 tree.create();
 ```
 
-You __must__ first set a `root` directory __before__ running this method.
+__Note__: you __must__ first set a `root` directory __before__ running this method.
 
 
-#### tree.leaves()
+##### tree.leaves()
 
-This method returns all tree leaves. If a tree has not been created, `leaves` will be an empty array. To return all tree leaves,
+Returns all tree leaves. If a tree has not been created, `leaves` will be an empty array. To return all tree leaves,
 
 ``` javascript
 tree.leaves();
+// returns [...]
 ```
 
 Note: the array elements will be relative paths from the `root` directory.
 
 
-#### tree.search( include[, exclude] )
+##### tree.search( include[, exclude] )
 
-This method searches a tree for leaves matching the provided regular expression filters. Either an `include` or `exclude` or both filters are __required__. To only specify an `exclude` filter, set the `include` filter to `null`. To perform a search,
+Searches a tree for leaves matching the provided regular expression filters. Either an `include` or `exclude` or both filters are __required__. To only specify an `exclude` filter, set the `include` filter to `null`. To perform a search,
 
 ``` javascript
 // Search inclusively for `*.md` files:
 tree.search( /+.\.md$/ );
+// returns {...}
 
 // Search for any files which are not `*.txt` files:
 tree.search( null, /.+\.txt$/ );
+// returns {...}
 
 // Search both inclusively and exclusively for all files having `foo` but not `bar` in their relative paths:
 tree.search( /foo/, /bar/ );
+// returns {...}
 ```
 
 
-#### tree.read( [options,] clbk )
+##### tree.read( [options,] clbk )
 
-This method searches a tree for leaves matching provided filters and reads the leaves ( files), returning the file content. The `options` object may have one or more of the following fields:
+Searches a tree for leaves matching provided filters and reads the leaves ( files), returning the file content.
 
 ``` javascript
-var options = {
-		'include': /foo/,
-		'exclude': /bar/,
-		'encoding': 'utf8',
-		'concat': true
-	};
+tree.read( onRead );
+
+function onRead( error, content ) {
+	if ( error ) {
+		console.error( error );
+		return;
+	}
+	console.log( content );
+}
 ```
 
-The filters are the same as for `tree.search()`. The `encoding` option is the file [encoding](http://nodejs.org/api/fs.html#fs_fs_readfile_filename_options_callback). The `concat` flag indicates whether the file content should be concatenated and returned as a `string`. If set to `false`, the file content is returned as an `object`, where each field is the absolute file path and each value is the corresponding file content.
+The method accepts the following `options`:
 
-To read leaves and concatentate the file content into a single string,
+*	__include__: inclusion filter (same as for `tree.search()`).
+*	__exclude__: exclusion filter (same as for `tree.search()`).
+*	__encoding__: file [encoding](http://nodejs.org/api/fs.html#fs_fs_readfile_filename_options_callback). Default: `'utf8'`.
+*	__concat__: `boolean` flag indicating whether the file content should be concatenated and returns as a `string`. If `false`, the file content is returned as an `object`, where each filed is the absolute file path and each value is the corresponding file content.
 
 ``` javascript
 var options = {
-		'include': /.+\.css$/,
-		'exclude': /src/,
-		'encoding': 'utf8',
-		'concat': true
-	};
+	'include': /.+\.css$/,
+	'exclude': /src/,
+	'encoding': 'utf8',
+	'concat': true
+};
 
 // Read and concatenate all CSS files not in a `src` directory:
 tree.read( options, onRead );
@@ -134,13 +149,21 @@ function onRead( error, content ) {
 ```
 
 
-#### tree.toJSON()
+##### tree.toJSON()
 
-This method serializes a directory tree as JSON. To get the JSON tree,
+Serializes a directory tree as JSON.
 
 ``` javascript
 tree.toJSON();
+// returns {...}
 ```
+
+
+## Notes
+
+This module currently __only__ supports _directories_ and _files_ and does __not__ support _symlinks_, _devices_, _FIFO_, or _sockets_.
+
+
 
 
 ## Examples 
@@ -167,17 +190,21 @@ console.log( tree.leaves() );
 // Search the leaves:
 console.log( tree.search( /index.js/ ) );
 
-// Read the leaves:
-console.log(
-	tree.read({
-		'include': /\.txt$/,
-		'encoding': 'utf8',
-		'concat': true
-	},
-	function onRead( text ) {
-		console.log( text );
-	})
-);
+// Read the leaves...
+var opts = {
+	'include': /\.txt$/,
+	'encoding': 'utf8',
+	'concat': true
+};
+
+tree.read( opts, onRead );
+
+function onRead( error, text ) {
+	if ( error ) {
+		throw error;
+	}
+	console.log( text );
+}
 ```
 
 To run example code from the top-level application directory,
@@ -187,17 +214,11 @@ $ node ./examples/index.js
 ```
 
 
-## Notes
-
-This module currently __only__ supports _directories_ and _files_ and does __not__ support _symlinks_, _devices_, _FIFO_, or _sockets_.
-
-
----
 ## Tests
 
 ### Unit
 
-Unit tests use the [Mocha](http://visionmedia.github.io/mocha) test framework with [Chai](http://chaijs.com) assertions. To run the tests, execute the following command in the top-level application directory:
+Unit tests use the [Mocha](http://mochajs.org) test framework with [Chai](http://chaijs.com) assertions. To run the tests, execute the following command in the top-level application directory:
 
 ``` bash
 $ make test
@@ -217,7 +238,7 @@ $ make test-cov
 Istanbul creates a `./reports/coverage` directory. To access an HTML version of the report,
 
 ``` bash
-$ open reports/coverage/lcov-report/index.html
+$ make view-cov
 ```
 
 
@@ -247,10 +268,9 @@ Filesystem:
 [MIT license](http://opensource.org/licenses/MIT). 
 
 
----
 ## Copyright
 
-Copyright &copy; 2014. Athan Reines.
+Copyright &copy; 2014-2015. Athan Reines.
 
 
 [npm-image]: http://img.shields.io/npm/v/dirtree.svg

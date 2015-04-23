@@ -2,9 +2,7 @@ DirTree
 ====
 [![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Coverage Status][coveralls-image]][coveralls-url] [![Dependencies][dependencies-image]][dependencies-url]
 
-> Translate a directory structure into a tree object.
-
-This module translates a directory structure into a tree object and provides an interface to search and load leaves (files) within that tree.
+> Compile a directory structure into a searchable tree.
 
 
 ## Installation
@@ -68,7 +66,7 @@ tree.exclude( 'files', /^\./ );
 
 ##### tree.create()
 
-Creates a directory tree.
+Compile a directory into a searchable tree.
 
 ``` javascript
 tree.create();
@@ -129,7 +127,7 @@ The method accepts the following `options`:
 *	__include__: inclusion filter (same as for `tree.search()`).
 *	__exclude__: exclusion filter (same as for `tree.search()`).
 *	__encoding__: file [encoding](http://nodejs.org/api/fs.html#fs_fs_readfile_filename_options_callback). Default: `'utf8'`.
-*	__concat__: `boolean` flag indicating whether the file content should be concatenated and returned as a `string`. If `false`, the file content is returned as an `object`, where each filed is the absolute file path and each value is the corresponding file content.
+*	__concat__: `boolean` flag indicating whether the file content should be concatenated and returned as a `string`. If `false`, the file content is returned as an `object`, where each filed is the absolute file path and each value is the corresponding file content. Default: `false`.
 
 ``` javascript
 var options = {

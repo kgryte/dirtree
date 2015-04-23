@@ -35,6 +35,7 @@
     "utils-copy": "^1.0.0",
     "utils-merge2": "^1.0.0",
     "validate.io-boolean-primitive": "^1.0.0",
+    "validate.io-object": "^1.0.3",
     "validate.io-regexp": "^1.0.3",
     "validate.io-string-primitive": "^1.0.0"
   },
